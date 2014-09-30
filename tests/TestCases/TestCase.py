@@ -45,7 +45,7 @@ def printProgressf(parser, string):
 
 failOnError = True
 printStringFirst = True
-printProgress = True
+printProgress = False
 printPassResult = True
 
 def testIt(parser, string, fail=False):

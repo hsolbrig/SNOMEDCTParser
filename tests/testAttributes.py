@@ -60,6 +60,11 @@ class testAttributeSet(unittest.TestCase):
         self.assertTrue(testIt(attribute.parseString, '[1..1]74400008 = 74400008'))
         self.assertTrue(testIt(attributeSet.parseString, '(74400008 = 74400008)'))
 
+    def test_attributeExpression(self):
+        self.assertTrue(testIt(attribute.parseString, '< 74400008 |appendicitis| = < 74400008 |appendicitis| '))
+        self.assertTrue(testIt(attribute.parseString, '< 74400008 |appendicitis| = >> 74400008 |appendicitis| '))
+        self.assertTrue(testIt(attribute.parseString, ' 74400008 |appendicitis| = << 74400008 |appendicitis| '))
+        self.assertTrue(testIt(attribute.parseString, ' 744000008 |appendicitis| = > 74400008 |appendicitis| '))
 
     def test_attributeConcreteValue(self):
         self.assertTrue(testIt(attribute.parseString, '74400008 <= #17'))
@@ -87,9 +92,9 @@ class testAttributeSet(unittest.TestCase):
         self.assertTrue(testIt(attributeSet.parseString, '(74400008 <= #17)'))
 
     def testx(self):
-        print(attributeSet.parseString('74400008 = "abc"', parseAll=True).asXML('p'))
-        print(attributeSet.parseString('(74400008 = "abc")   or  (74400008 = "def") ', parseAll=True).asXML('p'))
-        self.assertTrue(attributeSet.parseString('(74400008 = "abc")   or  (74400008 = "def") ', parseAll=True).asXML('p'))
+        self.assertTrue(testIt(attributeSet.parseString, '74400008 = "abc"'))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")   or  (74400008 = "def") '))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")   or  (74400008 = "def") '))
         self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  or   (74400008 = "def") '))
         self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  and   (74400008 = "def") '))
         self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  and   74400008 = "def" '))

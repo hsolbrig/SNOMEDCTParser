@@ -84,7 +84,8 @@ ancestorsOf = (Literal('>') | CaselessKeyword('ancestorsof'))('ancestorsOf')
 ancestorsOrSelfOf = (Literal('>>') | CaselessKeyword('ancestorsorselfof'))('ancestorsOrSelfOf')
 
 # constraintOperator = descendantsOf / descendantsOrSelfOf / ancestorsOf / ancestorsOrSelfOf
-constraintOperator = desendantsOrSelfOf | descendantsOf |  ancestorsOrSelfOf | ancestorsOf
+# NOTE: Not used in parser because we split the operations out
+# constraintOperator = desendantsOrSelfOf | descendantsOf |  ancestorsOrSelfOf | ancestorsOf
 
 # conjunction = ("a"/"A") ("n"/"N") ("d"/"D") " " / ","
 conjunction = Group(CaselessKeyword('and') | ',')('and')
@@ -113,6 +114,7 @@ reverseFlag = CaselessKeyword('reverseOf')
 
 # attributeOperator = descendantsOf / descendantsOrSelfOf
 # Q: Reverse order in abnf?
+# Q: Not officially used in this parser because we split the types out
 attributeOperator = desendantsOrSelfOf | descendantsOf
 
 # attributeName = conceptReference
@@ -148,10 +150,10 @@ attributeWithOp = (attributeName
                    | Group(Suppress(descendantsOf) + attributeName)('descendantsOf')
                   )
 reverseAttribute = (attributeWithOp | Group(Suppress(reverseFlag) + attributeWithOp)('reverse'))
-attributeCardinality = (reverseAttribute | Group(cardinality + reverseAttribute )('cardinality'))
-attribute = Group(attributeCardinality + Suppress('=') + (simpleConstraint | refinedConstraint ))('equivalent') |
-
-(Group(comparisonOperator + concreteValue)('concrete') |
+attributeCardinality = (reverseAttribute | Group(cardinality + reverseAttribute )('cardinalityConstraint'))
+attribute = (Group(attributeCardinality + comparisonOperator + concreteValue)('concrete')
+             | Group(attributeCardinality + Suppress('=') + (simpleConstraint | refinedConstraint ))('equivalent')
+             )('attribute')
 
 
 
@@ -159,15 +161,17 @@ attribute = Group(attributeCardinality + Suppress('=') + (simpleConstraint | ref
 #                 "(" ws attributeSet ws ")" /
 # 	             attributeSet ws (conjunction / disjunction) ws attributeSet
 simpleAttributeSet = Forward()
-simpleAttributeSet << Group(
-                    Group( attribute + ZeroOrMore((conjunction) + attribute))
-                    | (Suppressc('(', 'asp') + simpleAttributeSet + Suppressc(')', 'asp'))
-                 )('attributeSet')
+simpleAttributeSet << (Group( attribute + ZeroOrMore((conjunction) + attribute))
+                       | (Suppressc('(', 'asp') + simpleAttributeSet + Suppressc(')', 'asp')))
 
-attributeSet = simpleAttributeSet + ZeroOrMore(conjOrDisj + simpleAttributeSet)
+attributeSet = Forward()
+attributeSetConj = simpleAttributeSet | delimitedList(simpleAttributeSet, delim=disjunction)
+attributeSetDisj = attributeSetConj | delimitedList(attributeSetConj, delim=conjunction)
+attributeSet << attributeSetDisj
 
 def foo(e):
-    print(e)
+    if(len(e[0]) > 1):
+        print(e[0][0])
     return e
 
 # attributeGroup = "{" ws attributeSet ws "}" /
@@ -209,7 +213,11 @@ membersOf = (Literal('^') | CaselessKeyword('membersof'))('membersOf')
 
 membersOfExpression = Forward()
 membersOfExpression << (conceptReference | Group(Suppress(membersOf) + membersOfExpression)("membersOf"))
-constrainedReference = (membersOfExpression | Group(constraintOperator + membersOfExpression)("constraint"))
+constrainedReference = (membersOfExpression
+                        | Group(Suppress(desendantsOrSelfOf) + membersOfExpression)("descendantsOrSelfOf")
+                        | Group(Suppress(descendantsOf) + membersOfExpression)("descendantsOf")
+                        | Group(Suppress(ancestorsOrSelfOf) + membersOfExpression)("ancestorsOrSelfOf")
+                        | Group(Suppress(ancestorsOf) + membersOfExpression)("ancestorsOf"))
 negatedReference = (constrainedReference | Group(negationIndicator + conceptReference)("not"))
 
 simpleSimpleConstraint = Forward()
