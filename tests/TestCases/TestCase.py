@@ -26,7 +26,43 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+from pyparsing import ParseException
+
 class TestCase():
     def __init__(self, reference, text):
         self.reference = reference
         self.text = text
+
+def fmtException(e):
+    return '\n %s \n %s^\n%s (%s)' % (e.line, ' '*e.loc, e.parserElement, e.msg)
+
+def printProgressf(parser, string):
+    try:
+        print(parser(string).asXML('fail'))
+    except ParseException:
+        print("NO PROGRESS")
+
+
+failOnError = True
+printStringFirst = True
+printProgress = True
+printPassResult = True
+
+def testIt(parser, string, fail=False):
+    try:
+        if printStringFirst: print('=' * 20 + '\n' + string)
+        res = parser(string, parseAll=True)
+        if printPassResult: print(res.asXML('pass'))
+    except ParseException as e:
+        if fail:
+            return True
+        print("***** %s " % string)
+        print(fmtException(e))
+        if printProgress: printProgressf(parser, string)
+        return not failOnError
+    except RuntimeError as e:
+        print("***** %s" % string)
+        print("     Stack Overflow")
+        return False
+    return not fail
+

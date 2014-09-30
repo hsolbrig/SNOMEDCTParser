@@ -29,16 +29,34 @@
 
 import unittest
 from parser.parser import expressionConstraint, complexExpressionConstraint, simpleExpressionConstraint
-
+from pyparsing import ParseException
+from tests.TestCases.TestCase import fmtException
 
 class testExpressionConstraint(unittest.TestCase):
     def test_constraint(self):
-        print(simpleExpressionConstraint.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
-        print(complexExpressionConstraint.parseString('''19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
-''',parseAll=True).asXML('complexExpression'))
-        print(expressionConstraint.parseString('''19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
-''',parseAll=True).asXML('expression'))
-        print(expressionConstraint.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
+        try:
+            print(simpleExpressionConstraint.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
+            self.assertRaises(ParseException, complexExpressionConstraint.parseString, '< 19829001 |disorder of lung|', parseAll=True)
+            print(complexExpressionConstraint.parseString('''19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
+    ''',parseAll=True).asXML('complexExpression'))
+            print(expressionConstraint.parseString('''< 19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
+    ''',parseAll=True).asXML('expression'))
+            print(expressionConstraint.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
+            print(expressionConstraint.parseString('''< 19829001 |disorder of lung|:
+    116676008 |associated morphology| = 79654002 |edema|''', parseAll=True).asXML('expression'))
+            print(expressionConstraint.parseString('''<< 404684003 |clinical finding|:
+     { 363698007 |finding site| = 39057004 }''', parseAll=True).asXML('expression'))
+            print(expressionConstraint.parseString('''<< 404684003 |clinical finding|:
+     { 363698007 |finding site| = 39057004 |pulmonary valve structure|}''', parseAll=True).asXML('expression'))
+            print(expressionConstraint.parseString('''(< 19829001 |disorder of lung| OR 79654002 |edema|)''', parseAll=True).asXML('expression'))
+        except ParseException as e:
+            print(fmtException(e))
+            self.assertTrue(False)
+        except RuntimeError as e:
+            print("Recursion Failure")
+
+        self.assertTrue(True)
+
 
 
 

@@ -43,7 +43,7 @@ testCases = [
     TestCase('6.2.6 Members of (full)', 'membersOf 700043003| example problem list subset |'),
     TestCase('6.2.6 Members of multi (brief)', '^^ 1111000000132 |medication reference sets reference set|'),
     TestCase('6.2.6 Members of multi (brief)', 'membersOf membersOf 1111000000132 |medication reference sets reference set|'),
-    TestCase('6.3.1 Attributes (brief)', ''''< 19829001 |disorder of lung|:
+    TestCase('6.3.1 Attributes (brief)', '''< 19829001 |disorder of lung|:
 116676008 |associated morphology| = 79654002 |edema|'''),
     TestCase('6.3.1 Attributes (full)', '''descendantsOf 19829001 |disorder of lung| :
 116676008 |associated morphology| = 79654002 |edema|'''),

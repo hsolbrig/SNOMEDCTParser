@@ -28,25 +28,27 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-from parser.parser import simpleExpressionConstraint
+from parser.parser import simpleConstraint, conceptReference
+from tests.TestCases.TestCase import testIt
 
 
-class testSimpleExpressionConstraint(unittest.TestCase):
+class testsimpleConstraint(unittest.TestCase):
     def test_something(self):
-        print(simpleExpressionConstraint.parseString('404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('<404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('descendantsOf 404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('<<    404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('descendantsOrSelfOf 404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('> 404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('ancestorsOf 404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('>>    404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('ancestorsOrSelfOf 404684003 |clinical finding|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('^ 700043003 |example problem list subset|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('membersof 700043003 |example problem list subset|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('^^ 1111000000132 |medication reference sets reference set|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('membersof membersof 1111000000132 |medication reference sets reference set|').asXML('EXP'))
-        print(simpleExpressionConstraint.parseString('123456 OR < 123466 AND 1239999 | foo | , 74400008 | bar |',parseAll = True).asXML('EXP'))
-
+        self.assertTrue(testIt(conceptReference.parseString,'404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'<404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'descendantsOf 404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'<<    404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'descendantsOrSelfOf 404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'> 404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'ancestorsOf 404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'>>    404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'ancestorsOrSelfOf 404684003 |clinical finding|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'^ 700043003 |example problem list subset|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'membersof 700043003 |example problem list subset|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'^^ 1111000000132 |medication reference sets reference set|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'membersof membersof 1111000000132 |medication reference sets reference set|'))
+        self.assertTrue(testIt(simpleConstraint.parseString,'123456 OR < 123466 AND 1239999 | foo | , 74400008 | bar |'))
+      
 if __name__ == '__main__':
     unittest.main()

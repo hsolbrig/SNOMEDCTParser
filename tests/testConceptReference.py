@@ -28,19 +28,27 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-from parser.parser import conceptReference
+from parser.parser import conceptReference, term
 from pyparsing import ParseException
-
+from tests.TestCases.TestCase import testIt
 
 class testConceptReference(unittest.TestCase):
     def testConceptReference(self):
         self.assertEqual(123456, conceptReference.parseString('123456', parseAll=True)[0].sctid)
         self.assertEqual(123456,conceptReference.parseString('123456')[0].sctid)
+        self.assertTrue(testIt(term.parseString, 'abc'))
+        self.assertTrue(testIt(term.parseString, 'a'))
+        self.assertTrue(testIt(term.parseString, 'a b cè'))
+        self.assertTrue(testIt(term.parseString, '   ', fail=True))
+        self.assertTrue(testIt(term.parseString, 'a|b', fail=True))
+        self.assertTrue(testIt(conceptReference.parseString,'123456 | Something |'))
+        res = conceptReference.parseString('123456 | Something | ', parseAll=True)[0]
+        self.assertEqual('Something', res.term)
         res = conceptReference.parseString('123456 | Something good | ', parseAll=True)[0]
         self.assertEqual(123456, res.sctid)
-        # TODO: Note trailing space
-        self.assertEqual('Something good ', res.term)
+        self.assertEqual('Something good', res.term)
         self.assertRaises(ParseException, conceptReference.parseString,'123456 | embedded | bar |', parseAll=True)
+        self.assertTrue(testIt(conceptReference.parseString,'404684003 |clinical finding|'))
 
 
 if __name__ == '__main__':

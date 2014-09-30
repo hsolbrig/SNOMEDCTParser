@@ -29,13 +29,29 @@
 
 import unittest
 from parser.parser import expressionConstraint
+from pyparsing import ParseException
 
 
 class testTestCases(unittest.TestCase):
     def test_testcases(self):
         from tests.TestCases import ExpressionConstraintGuide
         for t in ExpressionConstraintGuide.testCases:
-            print(expressionConstraint.parseString(t.text).asXML('EXP'))
+            try:
+                print("Testing: %s" % t.reference)
+                # print(expressionConstraint.parseString(t.text).asXML('expression'))
+                expressionConstraint.parseString(t.text)
+            except ParseException as e:
+                print()
+                print(e.line)
+                print(' ' * e.col,'^')
+                print(e.msg)
+                self.assertTrue(False, t.reference)
+            except RuntimeError as e:
+                print(t.text)
+                print("***** Recursion failure")
+                self.assertTrue(False, t.reference)
+                self.assertTrue(False, t.reference)
+        self.assertTrue(True)
 
 
 
