@@ -149,10 +149,10 @@ attributeWithOp = (attributeName
                   )
 reverseAttribute = (attributeWithOp | Group(Suppress(reverseFlag) + attributeWithOp)('reverse'))
 attributeCardinality = (reverseAttribute | Group(cardinality + reverseAttribute )('cardinality'))
-attribute = Group(attributeCardinality +
-                  (Group(comparisonOperator + concreteValue)('concrete') |
-                   (Suppress('=') + (simpleConstraint | refinedConstraint ))
-                   ))('attribute')
+attribute = Group(attributeCardinality + Suppress('=') + (simpleConstraint | refinedConstraint ))('equivalent') |
+
+(Group(comparisonOperator + concreteValue)('concrete') |
+
 
 
 # attributeSet = attribute *(ws conjunction ws attribute) /
