@@ -1,0 +1,76 @@
+expression = [definitionType] subExpression;
+
+subExpression = focusConcept [COLON refinement];
+
+definitionType = (equivalentTo | subclassOf);
+
+focusConcept = conceptReference (AND focusConcept)?;
+
+conceptReference= sctId (BAR term BAR)?;
+
+
+refinement = attributeSet | attributeGroupSet;
+attributeGroupSet = attributeGroup (COMMA? attributeGroupSet)?;
+
+attributeSet = attribute (COMMA? (attributeSet | attributeGroupSet))?;
+
+attribute = attributeName EQ attributeValue;
+
+attributeName = conceptReference;
+
+attributeValue = expressionValue |  stringValue | decimalValue | integerValue;
+
+attributeGroup = LCURLEY attributeSet RCURLEY;
+
+expressionValue = conceptReference | (LPAREN subExpression RPAREN);
+
+
+
+@terminals
+equivalentTo = "===";
+
+subclassOf = "<<<";
+
+AND = "+";
+EQ = "=";
+HASH = "#";
+BAR = "|";
+COMMA = ",";
+COLON = ":";
+LPAREN = "(";
+RPAREN = "(";
+LCURLEY = "{";
+RCURLEY = "}";
+
+sctId = [1-9][0-9]+;
+
+integerValue = "#" ( ( ([+-])? [1-9] ([0-9])*) | "0");
+
+decimalValue = integerValue "." ([0-9])+;
+
+term = nonwsNonPipe+ ((' ')+ nonwsNonPipe+)*;
+
+stringValue = QM (anyNonEscapedChar | escapedChar)+ QM;
+
+QM = '"' | "“" | "”";
+
+escapedChar = ('\\' QM) | "\\\\";
+
+nonwsNonPipe = [#x21-#x7B] | [#x7D-#x7E] | UTFChars;
+
+anyNonEscapedChar = '\t' | '\n' | '\r' | [#x20-#x21] | [#x23-#x5B] | [#x5D-#x7E] | UTFChars;
+
+
+UTFChars =    [#x100-#x037D] | [#x037F-#x1FFF] | [#x200C-#x200D] | [#x203F-#x2040] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF];
+
+@pass = [ \t\r\n]*
+
+
+
+
+
+
+
+
+
+

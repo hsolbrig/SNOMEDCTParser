@@ -95,7 +95,7 @@ disjunction = CaselessKeyword('or')('or')
 
 
 # -- Added as a helper ---
-conjOrDisj = (conjunction | disjunction)
+#conjOrDisj = (conjunction | disjunction)
 
 
 # many = "*" / ( ("m"/"M") ("a"/"A") ("n"/"N") ("y"/"Y")
@@ -121,10 +121,13 @@ attributeOperator = desendantsOrSelfOf | descendantsOf
 attributeName = conceptReference
 
 # comparisonOperator = "=" / "!" ws "=" / ("n"/"N")("o"/"O")("t"/"T") ws "=" / "<" / "<=" / ">" / ">="
-comparisonOperator = (Literal('=')('eq') |
-                      Group( (Literal('!') + Literal('=')) |
-                             (Literal('not') + Literal('='))).setParseAction(lambda x: ''.join(x[0]))('neq') |
-                      Literal('<=')('leq') | Literal('<')('lt') | Literal('>=')('geq') | Literal('>')('gt'))
+eqOp = Literal('=')
+neqOp = (Literal('!') + Literal('=')) | (CaselessKeyword('not') + Literal('='))
+ltOp = Literal('<') | CaselessKeyword('lt')
+gtOp = Literal('>') | CaselessKeyword('gt')
+leOp = Literal('<=') | CaselessKeyword('le')
+geOp = Literal('>=') | CaselessKeyword('ge')
+# comparisonOperator = (leqOp | ltOp | geqOp | gtOp | neqOP | eqOp)
 
 # stringValue = 1*(anyNonEscapedChar / escapedChar)
 # anyNonEscapedChar = HTAB / CR / LF / %x20-21 / %x23-5B / %x5D-7E / UTF8-2 / UTF8-3 / UTF8-4
@@ -151,7 +154,12 @@ attributeWithOp = (attributeName
                   )
 reverseAttribute = (attributeWithOp | Group(Suppress(reverseFlag) + attributeWithOp)('reverse'))
 attributeCardinality = (reverseAttribute | Group(cardinality + reverseAttribute )('cardinalityConstraint'))
-attribute = (Group(attributeCardinality + comparisonOperator + concreteValue)('concrete')
+attribute = Group(Group(attributeCardinality + Suppress(eqOp) + concreteValue)('eq')
+             | Group(attributeCardinality + Suppress(neqOp) + concreteValue)('ne')
+             | Group(attributeCardinality + Suppress(leOp) + concreteValue)('le')
+             | Group(attributeCardinality + Suppress(ltOp) + concreteValue)('lt')
+             | Group(attributeCardinality + Suppress(geOp) + concreteValue)('ge')
+             | Group(attributeCardinality + Suppress(gtOp) + concreteValue)('gt')
              | Group(attributeCardinality + Suppress('=') + (simpleConstraint | refinedConstraint ))('equivalent')
              )('attribute')
 
@@ -161,7 +169,7 @@ attribute = (Group(attributeCardinality + comparisonOperator + concreteValue)('c
 #                 "(" ws attributeSet ws ")" /
 # 	             attributeSet ws (conjunction / disjunction) ws attributeSet
 simpleAttributeSet = Forward()
-simpleAttributeSet << (Group( attribute + ZeroOrMore((conjunction) + attribute))
+simpleAttributeSet << (( attribute + ZeroOrMore((conjunction) + attribute))
                        | (Suppressc('(', 'asp') + simpleAttributeSet + Suppressc(')', 'asp')))
 
 attributeSet = Forward()
@@ -182,7 +190,11 @@ simpleAttributeGroup = Forward()
 simpleAttributeGroup << (Group((Suppress('{') + attributeSet + Suppress('}')))('attributeGroup') |
                         (Suppressc('(','agp') + simpleAttributeGroup + Suppressc(')','agp')('i1')))
 
-attributeGroup = Group(simpleAttributeGroup + ZeroOrMore(Optional(conjOrDisj) + simpleAttributeGroup)).setParseAction(lambda e: foo(e))
+# TODO: Introduce disjunction
+attributeGroup = Forward()
+attributeGroupDisj = (simpleAttributeGroup | delimitedList(disjunction, attributeGroup))
+attributeGroupConj = (attributeGroupDisj | delimitedList(Optional(conjunction), attributeGroup))
+attributeGroup << (attributeGroupConj)
 
 
 
@@ -222,7 +234,8 @@ negatedReference = (constrainedReference | Group(negationIndicator + conceptRefe
 
 simpleSimpleConstraint = Forward()
 simpleSimpleConstraint << (negatedReference ^ (Suppress('(') + simpleSimpleConstraint + Suppress(')')))
-simpleConstraint << (simpleSimpleConstraint + ZeroOrMore(conjOrDisj + simpleSimpleConstraint))
+# TODO add disjunction
+simpleConstraint << (simpleSimpleConstraint + ZeroOrMore(conjunction + simpleSimpleConstraint))
 
 
 # A refinedConstraint is a constraint with a refinement.  A refinedConstraint cannot itself be refined
