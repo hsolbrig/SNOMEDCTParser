@@ -28,27 +28,27 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-from parser.parser import expressionConstraint, complexExpressionConstraint, simpleExpressionConstraint
+from parser.parser import constraint, refinedConstraintSet, simpleConstraintSet
 from pyparsing import ParseException
 from tests.TestCases.TestCase import fmtException
 
 class testExpressionConstraint(unittest.TestCase):
     def test_constraint(self):
         try:
-            print(simpleExpressionConstraint.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
-            self.assertRaises(ParseException, complexExpressionConstraint.parseString, '< 19829001 |disorder of lung|', parseAll=True)
-            print(complexExpressionConstraint.parseString('''19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
+            print(simpleConstraintSet.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
+            self.assertRaises(ParseException, refinedConstraintSet.parseString, '< 19829001 |disorder of lung|', parseAll=True)
+            print(refinedConstraintSet.parseString('''19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
     ''',parseAll=True).asXML('complexExpression'))
-            print(expressionConstraint.parseString('''< 19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
+            print(constraint.parseString('''< 19829001 |disorder of lung| : 116676008 |associated morphology| = 79654002 |edema|
     ''',parseAll=True).asXML('expression'))
-            print(expressionConstraint.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
-            print(expressionConstraint.parseString('''< 19829001 |disorder of lung|:
+            print(constraint.parseString('''< 19829001 |disorder of lung|   ''', parseAll=True).asXML('simpleExpression'))
+            print(constraint.parseString('''< 19829001 |disorder of lung|:
     116676008 |associated morphology| = 79654002 |edema|''', parseAll=True).asXML('expression'))
-            print(expressionConstraint.parseString('''<< 404684003 |clinical finding|:
+            print(constraint.parseString('''<< 404684003 |clinical finding|:
      { 363698007 |finding site| = 39057004 }''', parseAll=True).asXML('expression'))
-            print(expressionConstraint.parseString('''<< 404684003 |clinical finding|:
+            print(constraint.parseString('''<< 404684003 |clinical finding|:
      { 363698007 |finding site| = 39057004 |pulmonary valve structure|}''', parseAll=True).asXML('expression'))
-            print(expressionConstraint.parseString('''(< 19829001 |disorder of lung| OR 79654002 |edema|)''', parseAll=True).asXML('expression'))
+            print(constraint.parseString('''(< 19829001 |disorder of lung| OR 79654002 |edema|)''', parseAll=True).asXML('expression'))
         except ParseException as e:
             print(fmtException(e))
             self.assertTrue(False)

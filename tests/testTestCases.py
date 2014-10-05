@@ -28,7 +28,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-from parser.parser import expressionConstraint
+from parser.parser import constraint
 from pyparsing import ParseException
 
 
@@ -39,7 +39,7 @@ class testTestCases(unittest.TestCase):
             try:
                 print("Testing: %s" % t.reference)
                 # print(expressionConstraint.parseString(t.text).asXML('expression'))
-                expressionConstraint.parseString(t.text)
+                constraint.parseString(t.text)
             except ParseException as e:
                 print()
                 print(e.line)

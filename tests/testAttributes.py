@@ -28,7 +28,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-from parser.parser import attributeSet, attribute, attributeGroup
+from parser.parser import attributeSet, attribute, attributeGroup, simpleAttributeGroup
 from pyparsing import ParseException
 from tests.TestCases.TestCase import fmtException, testIt
 
@@ -93,20 +93,24 @@ class testAttributeSet(unittest.TestCase):
 
     def testx(self):
         self.assertTrue(testIt(attributeSet.parseString, '74400008 = "abc"'))
-        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")   or  (74400008 = "def") '))
-        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")   or  (74400008 = "def") '))
-        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  or   (74400008 = "def") '))
-        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  and   (74400008 = "def") '))
-        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  and   74400008 = "def" '))
-        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  ,   74400008 = "def" '))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")   or  (74400008 = "def1") '))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")   or  (74400008 = "def2") '))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  or   (74400008 = "def3") '))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  and   (74400008 = "def4") '))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  and   74400008 = "def5" '))
+        self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")  ,   74400008 = "def6" '))
 
 
     def test2(self):
         try:
             self.assertTrue(testIt(attributeSet.parseString, '363698007 |finding site| = << 39057004 |pulmonary valve structure|'))
             self.assertTrue(testIt(attributeSet.parseString, '116676008 |associated morphology| = << 415582006 |stenosis|'))
-            self.assertTrue(testIt(attributeSet.parseString, '''363698007 |finding site| = << 39057004 |pulmonary valve structure|,
- 116676008 |associated morphology| = << 415582006 |stenosis|'''))
+            # TODO: the item below does not parse, but I'm not sure it should...
+            #  attributeSet = attribute *(conjunction attribute) -->
+            #  attribute = attributeName "=" expressionConstraintValue 363698007 |finding site| =
+            #  expressionConstraintValue = simpleExpressionConstraint
+            #  simpleExpressionConstraint = conceptReference conjunction simpleEpressionConstraint :: |pulmonary valve structure|, 116676008 |associated morphology|
+            self.assertTrue(testIt(attributeSet.parseString, '''363698007 |finding site| = << 39057004 |pulmonary valve structure|, 116676008 |associated morphology| = << 415582006 |stenosis|'''))
             self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")'))
             self.assertTrue(testIt(attributeSet.parseString, '(74400008 = "abc")    , 74400009 <= #2'))
             self.assertTrue(testIt(attributeSet.parseString, ' 74400008 = "abc"     , 74400009 <= #2'))
@@ -120,13 +124,15 @@ class testAttributeSet(unittest.TestCase):
 #                  “(“ ws attributeGroup ws “)” /
 # 	               attributeGroup ws (conjunction / disjunction) ws attributeGroup
     def testAttributeGroup(self):
+        self.assertTrue(testIt(simpleAttributeGroup.parseString, '{74400008 <= #17}'))
         self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17}'))
-        self.assertTrue(testIt(attributeGroup.parseString, '({74400008 <= #17})'))
+        self.assertTrue(testIt(simpleAttributeGroup.parseString, '( {74400008 <= #17} )'))
+        self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17},{74400008 <= #17}'))
         self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17}{74400008 <= #17}'))
         self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17}{74400008 <= #17}{74400008 <= #17}'))
         self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17} OR {74400008 <= #17}'))
         self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17} AND {74400008 <= #17}'))
-        self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17},{74400008 <= #17}'))
+
         self.assertTrue(testIt(attributeGroup.parseString, '{74400008 <= #17}({74400008 <= #17} AND {74400008 <= #17})', fail=True))
 
 

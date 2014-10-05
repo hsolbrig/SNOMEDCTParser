@@ -82,18 +82,18 @@ descendantsOrSelfOf 267038008 |oedema|'''),
    222222 |has reference basis of strength| = 372687004 |amoxicillin|,
    333333 |strength magnitude equal to| >= #500,
    444444 |strength unit| = 258684004 |mg|}'''),
-    TestCase('6.3.6 Concrete values 2', '''< XXX |amoxicillin tablet|:
+    TestCase('6.3.6 Concrete values 2', '''< 111111 |amoxicillin tablet|:
 { 127489000 |has active ingredient| = 372687004 |amoxicillin|,
-   XXX |has reference basis of strength | = 372687004 |amoxicillin|,
-   XXX |strength magnitude equal to| >= #500,
-   XXX |strength magnitude equal to| <= #800,
-   XXX |strength unit| = 258684004 |mg|}'''),
+   111111 |has reference basis of strength | = 372687004 |amoxicillin|,
+   111111 |strength magnitude equal to| >= #500,
+   111111 |strength magnitude equal to| <= #800,
+   111111 |strength unit| = 258684004 |mg|}'''),
     TestCase('6.3.6 Concrete values 3', '''<< 373873005 |pharmaceutical / biologic product|:
-XXX |trade name| = "PANADOL"'''),
+111111 |trade name| = "PANADOL"'''),
     TestCase('6.3.7 Reverse attributes (brief)', '''< 105590001 |substance|:
-R 127489000 |has active ingredient| = XXX |TRIPHASIL tablet|'''),
+R 127489000 |has active ingredient| = 111111 |TRIPHASIL tablet|'''),
     TestCase('6.3.7 Reverse attributes (full)', '''descendantsOf 105590001 |substance|:
-reverseOf 127489000 |has active ingredient| = XXX |TRIPHASIL tablet|'''),
+reverseOf 127489000 |has active ingredient| = 111111 |TRIPHASIL tablet|'''),
     TestCase('6.3.8 Cardinality 1','''< 373873005 |pharmaceutical / biologic product|:
 [3..*] 127489000 |has active ingredient| = < 105590001 |substance|'''),
     TestCase('6.3.8 Cardinality 2', '''descendantsOf 373873005 |pharmaceutical / biologic product|:
